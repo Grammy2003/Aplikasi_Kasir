@@ -55,8 +55,9 @@ class TransaksiPenjualanController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi request
+        // Validasi
         $request->validate([
+            // PelangganID hanya divalidasi kalau diisi
             'PelangganID' => 'nullable|exists:pelanggans,PelangganID',
             'TglPenjualan' => 'required|date',
             'TotalHarga' => 'required|numeric',
@@ -66,11 +67,11 @@ class TransaksiPenjualanController extends Controller
             'DetailID.*.produkID' => 'required|exists:products,produkID',
             'DetailID.*.kuantitas' => 'required|integer|min:1',
         ]);
-
-        // Cek stok sebelum menyimpan transaksi
+    
+        // Cek stok cukup
         foreach ($request->DetailID as $detail) {
             $product = Product::findOrFail($detail['produkID']);
-
+    
             if ($detail['kuantitas'] > $product->stok) {
                 return back()->withErrors([
                     'message' => 'Stok tidak cukup untuk produk ' . $product->nama_produk . 
@@ -78,33 +79,33 @@ class TransaksiPenjualanController extends Controller
                 ]);
             }
         }
-
-        // Simpan transaksi penjualan
+    
+        // Simpan transaksi
         $transaksi_penjualan = TransaksiPenjualan::create([
-            'PelangganID' => $request->PelangganID,
+            'PelangganID' => $request->filled('PelangganID') ? $request->PelangganID : null,
             'TglPenjualan' => $request->TglPenjualan,
             'TotalHarga' => $request->TotalHarga,
             'UangBayar' => $request->UangBayar,
             'Kembali' => $request->Kembali,
         ]);
-
-        // Simpan detail transaksi dan kurangi stok produk
+    
+        // Simpan detail & kurangi stok
         foreach ($request->DetailID as $detail) {
             $product = Product::findOrFail($detail['produkID']);
-
+    
             Detail::create([
                 'PenjualanID' => $transaksi_penjualan->PenjualanID,
                 'produkID' => $detail['produkID'],
                 'kuantitas' => $detail['kuantitas'],
             ]);
-
-            // Kurangi stok produk
+    
             $product->stok -= $detail['kuantitas'];
             $product->save();
         }
-
+    
         return redirect()->route('transaksi_penjualans.index')->with('success', 'Penjualan Berhasil Disimpan.');
     }
+    
 
     /**
      * Menampilkan detail transaksi.

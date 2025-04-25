@@ -52,29 +52,31 @@ class SatuanController extends Controller
      * Menampilkan form edit satuan.
      */
     public function edit($satuanID)
-    {
-        $satuans = Satuan::findOrFail($satuanID);
-        return view('satuans.edit', compact('satuans'));
-    }
+{
+    $satuan = Satuan::findOrFail($satuanID);
+    return view('satuans.edit', compact('satuan'));
+}
+
 
     /**
      * Memperbarui data satuan.
      */
     public function update(Request $request, $satuanID)
-    {
-        $request->validate([
-            'nama_satuan' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'nama_satuan' => 'required|string|max:255',
+        'deskripsi' => 'nullable|string',
+    ]);
 
-        $satuans = Satuan::findOrFail($satuanID);
-        $satuans->update([
-            'nama_satuan' => $request->nama_satuan,
-            'deskripsi' => $request->deskripsi,
-        ]);
+    $satuan = Satuan::findOrFail($satuanID);
+    $satuan->update([
+        'nama_satuan' => $request->nama_satuan,
+        'deskripsi' => $request->deskripsi,
+    ]);
 
-        return redirect()->route('satuans.index')->with('success', 'Satuan berhasil diperbarui.');
-    }
+    return redirect()->route('satuans.index')->with('success', 'Satuan berhasil diperbarui.');
+}
+
 
     /**
      * Menghapus satuan dari database.

@@ -87,7 +87,7 @@
                         <tr>
                             <td>{{ $key + 1 }}</td>
                             <td>{{ $transaksi->TglPenjualan }}</td>
-                            <td>{{ $transaksi->pelanggan->namapelanggan ?? 'Umum' }}</td>
+                            <td>{{ $transaksi->pelanggan->namapelanggan ?? 'Non Member' }}</td>
                             <td>
                                 @foreach ($transaksi->details as $item) <!-- Changed detail to details -->
                                     {{ $item->product->nama_produk }} x{{ $item->kuantitas }}<br> <!-- Changed produk to product -->

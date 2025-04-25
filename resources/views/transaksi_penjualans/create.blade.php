@@ -1,4 +1,3 @@
-
 @extends('home')
 
 @section('content')
@@ -18,8 +17,21 @@
     <form action="{{ route('transaksi_penjualans.store') }}" method="POST">
         @csrf
 
+        <!-- Pilihan Jenis Pelanggan -->
+        <div class="form-group mb-3">
+            <label class="form-label">Jenis Pelanggan</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="jenis_pelanggan" id="member" value="member" checked>
+                <label class="form-check-label" for="member">Member</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="jenis_pelanggan" id="non_member" value="non_member">
+                <label class="form-check-label" for="non_member">Non Member</label>
+            </div>
+        </div>
+
         <!-- Pilihan pelanggan -->
-        <div class="form-group">
+        <div class="form-group" id="pelanggan-select-container">
             <label for="PelangganID">Pilih Pelanggan</label>
             <select name="PelangganID" id="PelangganID" class="form-control select2">
                 <option value="">-- Pilih Pelanggan --</option>
@@ -104,15 +116,16 @@
     </form>
 </div>
 
-<!-- JavaScript untuk Dinamika Produk -->
+<!-- JavaScript untuk Dinamika Produk dan Jenis Pelanggan -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const productTable = document.getElementById('productRows');
     const totalHargaInput = document.getElementById('TotalHarga');
     const uangBayarInput = document.getElementById('UangBayar');
     const kembaliInput = document.getElementById('Kembali');
+    const pelangganContainer = document.getElementById('pelanggan-select-container');
 
-    // Tambahkan baris produk baru
+    // Tambah baris produk
     document.getElementById('addRow').addEventListener('click', () => {
         const rowCount = productTable.children.length;
         const newRow = document.createElement('tr');
@@ -120,9 +133,9 @@ document.addEventListener('DOMContentLoaded', function () {
             <td>
                 <select class="form-control select2 product-select" name="DetailID[${rowCount}][produkID]" required>
                     <option value="">Pilih Produk</option>
-                    {!! json_encode($products->map(function($product) {
-                        return "<option value='{$product->produkID}' data-harga='{$product->harga}'>{$product->nama_produk}</option>";
-                    })->implode('')) !!}
+                    @foreach ($products as $product)
+                        <option value="{{ $product->produkID }}" data-harga="{{ $product->harga }}">{{ $product->nama_produk }}</option>
+                    @endforeach
                 </select>
             </td>
             <td>
@@ -168,15 +181,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Hitung total harga
-    function calculateTotal() {
-        let total = 0;
-        document.querySelectorAll('.subtotal').forEach((input) => {
-            total += parseFloat(input.value || 0);
-        });
-        totalHargaInput.value = total.toFixed(0);
-    }
-
     // Hitung subtotal
     function updateSubtotal(row) {
         const harga = parseFloat(row.querySelector('.harga').value || 0);
@@ -186,12 +190,36 @@ document.addEventListener('DOMContentLoaded', function () {
         calculateTotal();
     }
 
+    // Hitung total
+    function calculateTotal() {
+        let total = 0;
+        document.querySelectorAll('.subtotal').forEach((input) => {
+            total += parseFloat(input.value || 0);
+        });
+        totalHargaInput.value = total.toFixed(0);
+    }
+
     // Hitung kembalian
     uangBayarInput.addEventListener('input', () => {
         const totalHarga = parseFloat(totalHargaInput.value || 0);
         const uangBayar = parseFloat(uangBayarInput.value || 0);
         kembaliInput.value = uangBayar ? (uangBayar - totalHarga).toFixed(0) : 0;
     });
+
+    // Tampilkan/sembunyikan pelanggan jika Member/Non-Member
+    document.querySelectorAll('input[name="jenis_pelanggan"]').forEach((radio) => {
+        radio.addEventListener('change', function () {
+            if (this.value === 'non_member') {
+                pelangganContainer.style.display = 'none';
+                document.getElementById('PelangganID').value = '';
+            } else {
+                pelangganContainer.style.display = 'block';
+            }
+        });
+    });
+
+    // Trigger default untuk tampilan awal
+    document.querySelector('input[name="jenis_pelanggan"]:checked').dispatchEvent(new Event('change'));
 });
 </script>
 

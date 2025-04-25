@@ -58,7 +58,7 @@
                     @forelse ($transaksi_penjualans as $index => $transaksi)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $transaksi->pelanggan->namapelanggan ?? 'Tidak Ada' }}</td>
+                            <td>{{ $transaksi->pelanggan->namapelanggan ?? ' Non Member' }}</td>
                             <td>
                                 @if ($transaksi->details->isNotEmpty())
                                     <ul class="list-unstyled mb-0">

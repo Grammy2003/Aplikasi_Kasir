@@ -59,7 +59,7 @@
                             <td>{{ optional($product->category)->nama_category ?? 'Tanpa Kategori' }}</td>
                             <td>Rp {{ number_format($product->harga, 0, ',', '.') }}</td>
                             <td>{{ $product->stok }}</td>
-                            <td>{{ $product->satuan->nama_satuan }}</td>
+                            <td>{{ $product->satuan ? $product->satuan->nama_satuan : 'No Satuan' }}</td>
                             <td>{{ optional($product->supplier)->nama_supplier ?? '-' }}</td>
                             @if(Auth::user()->role !== 'kasir')
                                 <td>

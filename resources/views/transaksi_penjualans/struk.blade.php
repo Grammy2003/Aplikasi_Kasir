@@ -1,3 +1,4 @@
+
 @extends('home')
 
 @section('content')
@@ -26,6 +27,7 @@
     }
 
     .text-center {
+        y8h
         text-align: center;
     }
 
@@ -112,7 +114,7 @@
         </div>
 
         <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($transaksi->TglPenjualan)->format('d-m-Y') }}</p>
-        <p><strong>Pelanggan:</strong> {{ $transaksi->pelanggan->namapelanggan ?? 'Tidak Ada' }}</p>
+        <p><strong>Pelanggan:</strong> {{ $transaksi->pelanggan->namapelanggan ?? 'Non Member' }}</p>
         <p><strong>No. Struk:</strong> {{ $transaksi->PenjualanID }}</p>
         <hr class="hr-clean">
 
@@ -155,3 +157,5 @@
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 @endsection
+
+
